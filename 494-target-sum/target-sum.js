@@ -4,15 +4,13 @@
  * @return {number}
  */
 var findTargetSumWays = function(nums, target) {
-    const m = new Map();
-    const backtrack = (idx, currSum) => {
-        const key = `${idx},${currSum}`;
-        if (m.has(key)) return m.get(key);
-        if (idx === nums.length) return currSum === target ? 1 : 0;
-        const add = backtrack(idx + 1, currSum + nums[idx]);
-        const sub = backtrack(idx + 1, currSum - nums[idx]);
-        m.set(key, add + sub);
-        return add + sub;
+    const totalSum = nums.reduce((a, b) => a + b, 0);
+    if ((totalSum + target) % 2 !== 0 || totalSum < Math.abs(target)) return 0;
+    const subsetSum = (totalSum + target) / 2;
+    const dp = new Array(subsetSum + 1).fill(0);
+    dp[0] = 1;
+    for (const num of nums) {
+        for (let sum = subsetSum; sum >= num; sum--) dp[sum] += dp[sum - num];
     }
-    return backtrack(0, 0);
+    return dp[subsetSum];
 };
